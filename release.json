@@ -2,7 +2,8 @@
   "version": "0.18",
   "name": "Crosscut",
   "artifact": "0_18",
-  "html_sha256": "3fdae0c4a2a1f11dd0e2656aca911d1ece80963d45f8148839d6c147230d5d35",
+  "html_sha256": "39927b97ddb6d0ba0adacc60f32f0a1bfd28bcb48c13d92eb1536e620fea475f",
   "assets": 26,
-  "download": "downloads/Void_Crew_0_18_Playable.zip"
+  "download": "downloads/Void_Crew_0_18_Playable.zip",
+  "revision": "traversal-1"
 }

@@ -91,7 +91,7 @@ const key={},pressed=new Set(),mouse={x:480,y:270,down:false};
 const lab=$('#lab');
 const floors=[{x:0,y:290,w:420},{x:520,y:290,w:720},{x:1340,y:290,w:590},{x:2040,y:290,w:410},{x:0,y:555,w:680},{x:780,y:555,w:730},{x:1585,y:555,w:865},{x:0,y:820,w:1020},{x:1120,y:820,w:1330}];
 const ladders=[{x:250,top:290,bottom:555},{x:920,top:290,bottom:555},{x:1790,top:290,bottom:555},{x:380,top:555,bottom:820},{x:1380,top:555,bottom:820},{x:2210,top:555,bottom:820}];
-const obstacleSpecs=[{x:105,y:505,w:68,h:50},{x:555,y:505,w:58,h:50},{x:1120,y:505,w:70,h:50},{x:1730,y:505,w:58,h:50},{x:2110,y:505,w:64,h:50},{x:650,y:770,w:65,h:50},{x:1660,y:770,w:60,h:50},{x:1140,y:240,w:65,h:50},{x:1870,y:240,w:55,h:50}];
+const obstacleSpecs=[{x:105,y:505,w:68,h:50},{x:555,y:505,w:58,h:50},{x:1120,y:505,w:70,h:50},{x:1690,y:505,w:58,h:50},{x:2110,y:505,w:64,h:50},{x:650,y:770,w:65,h:50},{x:1660,y:770,w:60,h:50},{x:1140,y:240,w:65,h:50},{x:1870,y:240,w:55,h:50}];
 const spawns=[{x:210,y:555},{x:2250,y:555},{x:1240,y:820}];
 const spots=[{x:560,y:522,deck:555,type:'smg'},{x:1980,y:522,deck:555,type:'shotgun'},{x:1180,y:787,deck:820,type:'armor'},{x:405,y:787,deck:820,type:'scrap'},{x:2200,y:256,deck:290,type:'scrap'},{x:1230,y:522,deck:555,type:'core'},{x:760,y:257,deck:290,type:'ammo'},{x:1450,y:522,deck:555,type:'ammo'},{x:850,y:787,deck:820,type:'ammo'},{x:1630,y:522,deck:555,type:'breach'},{x:1550,y:257,deck:290,type:'coil'},{x:520,y:787,deck:820,type:'grenade'},{x:1060,y:257,deck:290,type:'decoy'},{x:1940,y:787,deck:820,type:'capacitor'},{x:880,y:522,deck:555,type:'disruptor'}];
 // Arena definitions keep collision, navigation, scenery and encounter placement together.
@@ -100,7 +100,7 @@ const arenas={freighter:{name:'Broken Freighter',w:2450,h:930,floors:floors.map(
 carrion:{name:'Carrion Works',w:2680,h:1040,
  floors:[{x:0,y:620,w:640},{x:80,y:300,w:560},{x:500,y:460,w:390},{x:890,y:500,w:740},{x:920,y:260,w:650},{x:1770,y:420,w:830},{x:1560,y:650,w:390},{x:350,y:850,w:570},{x:1050,y:850,w:450},{x:1880,y:820,w:800},{x:1030,y:650,w:370},{x:1670,y:260,w:240}],
  ladders:[{x:220,top:300,bottom:620},{x:580,top:300,bottom:460},{x:565,top:460,bottom:620},{x:810,top:460,bottom:850},{x:460,top:620,bottom:850},{x:970,top:260,bottom:500},{x:1390,top:260,bottom:500},{x:1180,top:500,bottom:650},{x:1200,top:650,bottom:850},{x:1585,top:500,bottom:650},{x:1860,top:420,bottom:650},{x:2300,top:420,bottom:820},{x:1900,top:650,bottom:820},{x:1830,top:260,bottom:420},{x:1500,top:260,bottom:500}],
- boxes:[{x:350,y:570,w:62,h:50},{x:740,y:415,w:52,h:45},{x:1110,y:450,w:62,h:50},{x:2010,y:370,w:64,h:50},{x:2350,y:770,w:62,h:50},{x:1280,y:210,w:55,h:50},{x:980,y:468,w:42,h:32},{x:1535,y:468,w:42,h:32},{x:2225,y:382,w:46,h:38},{x:2030,y:792,w:38,h:28},{x:1420,y:464,w:26,h:36,type:'drum'},{x:1740,y:614,w:26,h:36,type:'drum'},{x:1300,y:814,w:26,h:36,type:'drum'}],
+ boxes:[{x:350,y:570,w:62,h:50},{x:710,y:415,w:52,h:45},{x:1075,y:450,w:62,h:50},{x:2010,y:370,w:64,h:50},{x:2350,y:770,w:62,h:50},{x:1280,y:210,w:55,h:50},{x:1020,y:468,w:42,h:32},{x:1260,y:468,w:42,h:32},{x:2200,y:382,w:46,h:38},{x:2030,y:792,w:38,h:28},{x:1430,y:464,w:26,h:36,type:'drum'},{x:1740,y:614,w:26,h:36,type:'drum'},{x:1300,y:814,w:26,h:36,type:'drum'}],
  walls:[{x:560,y:784,w:156,h:34},{x:650,y:285,w:29,h:125},{x:1720,y:310,w:25,h:62}],
  spawns:[{x:180,y:620},{x:2430,y:420},{x:2440,y:820}],
  spots:[{x:495,deck:620,type:'smg'},{x:2120,deck:420,type:'shotgun'},{x:1375,deck:260,type:'coil'},{x:1780,deck:650,type:'breach'},{x:760,deck:850,type:'arc'},{x:2080,deck:820,type:'plasma'},
@@ -114,11 +114,11 @@ carrion:{name:'Carrion Works',w:2680,h:1040,
  breaches:[[[1970,18],[2630,12],[2660,43],[2643,151],[2430,161],[2170,147],[1958,164],[1944,76]],[[643,15],[1950,21],[1927,176],[1650,279],[647,279]],[[905,515],[1542,517],[1550,835],[927,838],[905,762]],[[15,25],[74,27],[74,302],[341,316],[341,385],[15,385]]],
  lights:[{x:140,y:412,w:64},{x:350,y:92,w:60},{x:1030,y:308,w:72},{x:1490,y:307,w:60},{x:2030,y:220,w:62},{x:1800,y:496,w:60},{x:470,y:689,w:56},{x:1190,y:707,w:60},{x:2330,y:691,w:68}]}}
 };
-// Crosscut keeps the old Carrion arena intact for direct comparison.
+// Keep the tall Carrion layout available for comparison; only obstructing props move.
 arenas.crosscut={name:'Carrion / Crosscut',w:2860,h:660,
  floors:[{x:0,y:360,w:620},{x:700,y:360,w:1050},{x:1830,y:360,w:1030},{x:180,y:500,w:740},{x:1030,y:500,w:700},{x:1840,y:500,w:940},{x:100,y:245,w:350},{x:1200,y:245,w:370},{x:2040,y:245,w:400}],
- ladders:[{x:210,top:245,bottom:360},{x:425,top:245,bottom:360},{x:1230,top:245,bottom:360},{x:1535,top:245,bottom:360},{x:2080,top:245,bottom:360},{x:2405,top:245,bottom:360},{x:260,top:360,bottom:500},{x:550,top:360,bottom:500},{x:850,top:360,bottom:500},{x:1110,top:360,bottom:500},{x:1650,top:360,bottom:500},{x:1940,top:360,bottom:500},{x:2560,top:360,bottom:500}],
- boxes:[{x:390,y:310,w:58,h:50},{x:870,y:322,w:45,h:38},{x:1280,y:310,w:62,h:50},{x:1600,y:328,w:42,h:32},{x:2140,y:310,w:62,h:50},{x:2520,y:322,w:46,h:38},{x:865,y:468,w:42,h:32},{x:1390,y:450,w:58,h:50},{x:2260,y:460,w:50,h:40},{x:1340,y:210,w:46,h:35},{x:1490,y:324,w:26,h:36,type:'drum'},{x:1210,y:464,w:26,h:36,type:'drum'},{x:2380,y:464,w:26,h:36,type:'drum'}],
+ ladders:[{x:210,top:245,bottom:360},{x:425,top:245,bottom:360},{x:1230,top:245,bottom:360},{x:1535,top:245,bottom:360},{x:2080,top:245,bottom:360},{x:2405,top:245,bottom:360},{x:260,top:360,bottom:500},{x:520,top:360,bottom:500},{x:850,top:360,bottom:500},{x:1110,top:360,bottom:500},{x:1650,top:360,bottom:500},{x:1940,top:360,bottom:500},{x:2560,top:360,bottom:500}],
+ boxes:[{x:330,y:310,w:58,h:50},{x:890,y:322,w:45,h:38},{x:1280,y:310,w:62,h:50},{x:1571,y:328,w:42,h:32},{x:2140,y:310,w:62,h:50},{x:2465,y:322,w:46,h:38},{x:340,y:468,w:42,h:32},{x:1390,y:450,w:58,h:50},{x:2260,y:460,w:50,h:40},{x:1340,y:210,w:46,h:35},{x:1470,y:324,w:26,h:36,type:'drum'},{x:1210,y:464,w:26,h:36,type:'drum'},{x:2380,y:464,w:26,h:36,type:'drum'}],
  walls:[{x:570,y:434,w:130,h:34}],
  spawns:[{x:150,y:360},{x:2690,y:360},{x:1550,y:500}],
  spots:[{x:480,deck:360,type:'smg'},{x:2290,deck:360,type:'shotgun'},{x:1460,deck:245,type:'coil'},{x:1680,deck:500,type:'breach'},{x:790,deck:500,type:'arc'},{x:2470,deck:500,type:'plasma'},{x:1450,deck:360,type:'core'},{x:2320,deck:245,type:'scrap'},{x:320,deck:245,type:'scrap'},{x:1150,deck:500,type:'armor'},{x:170,deck:245,type:'ammo'},{x:1720,deck:360,type:'ammo'},{x:2690,deck:500,type:'ammo'},{x:970,deck:360,type:'grenade'},{x:1260,deck:245,type:'decoy'},{x:1930,deck:360,type:'capacitor'},{x:1080,deck:500,type:'disruptor'},{x:350,deck:360,type:'medgel'},{x:2200,deck:500,type:'bulwark'},{x:2180,deck:245,type:'overclock'}].map(s=>({...s,y:s.deck-33})),
@@ -459,13 +459,29 @@ function move(p,dt,input){
   let {dir=0,up=false,down=false,boost=false,jump=false,slide=false}=input;
   p.slideWait=Math.max(0,p.slideWait-dt);p.drop=Math.max(0,p.drop-dt);
   p.coyote=p.ground?.085:Math.max(0,p.coyote-dt);p.jumpBuffer=jump?.1:Math.max(0,p.jumpBuffer-dt);
-  const ladder=ladders.find(l=>Math.abs(p.x-l.x)<23&&p.y>=l.top-22&&p.y<=l.bottom+12&&(up&&p.y>l.top+.5||down&&p.y<l.bottom-.5))||nearLadder(p),climbing=!!ladder&&(up||down)&&!boost&&!jump&&p.slide<=0;
-  if(climbing){p.ladder=true;p.x+=(ladder.x-p.x)*Math.min(1,dt*12);p.vx=0;p.vy=(down?1:-1)*225;p.y=clamp(p.y+p.vy*dt,ladder.top,ladder.bottom);if(p.y===ladder.top||p.y===ladder.bottom)p.navDeck=p.y;p.ground=false;p.fuel=Math.min(1,p.fuel+dt/3);return;}
-  if(p.ladder){p.ladder=false;p.vy=0;}
+  // An endpoint is a standing deck, not another climbing frame. Require a
+  // fresh vertical press before continuing onto an adjacent ladder segment.
+  const climbDir=(down?1:0)-(up?1:0);
+  if(!climbDir||climbDir!==p.ladderExit?.dir)p.ladderExit=null;
+  const ladder=!p.ladderExit&&ladders.find(l=>Math.abs(p.x-l.x)<23&&p.y>=l.top-22&&p.y<=l.bottom+12&&(climbDir<0&&p.y>l.top+.5||climbDir>0&&p.y<l.bottom-.5));
+  const clearBody=(x,y)=>!terrainSolids().some(b=>x+12>b.x&&x-12<b.x+b.w&&y>b.y&&y-43<b.y+b.h);
+  if(ladder&&climbDir&&!boost&&!jump&&p.slide<=0){
+    const x=p.x+(ladder.x-p.x)*Math.min(1,dt*12),y=clamp(p.y+climbDir*225*dt,ladder.top,ladder.bottom);
+    if(clearBody(x,p.y)&&clearBody(x,y)){
+      p.x=x;p.y=y;p.vx=0;p.vy=climbDir*225;p.ladder=true;p.ground=false;p.jet=0;
+      p.fuel=Math.min(1,p.fuel+dt/3);
+      if(y===ladder.top||y===ladder.bottom){p.ladder=false;p.ground=true;p.vy=0;p.navDeck=y;p.coyote=.085;p.ladderExit={dir:climbDir};}
+      return;
+    }
+  }
+  const leavingLadder=p.ladder;
+  if(leavingLadder){p.ladder=false;p.vy=0;if(jump)p.coyote=.085;}
   if(p.ground&&down&&jump){p.drop=.25;p.ground=false;p.y+=7;p.vy=75;p.jumpBuffer=0;p.coyote=0;}
   if(slide&&p.ground&&p.slideWait<=0&&Math.abs(p.vx)>130){p.slide=.48;p.slideWait=.7;p.face=Math.sign(p.vx);p.vx=p.face*tuning.slide;p.slides++;fx(p.x,p.y-3,'#aa8c65',9);if(p.id===0)sound(130,.16,.025,null,'triangle');}
-  if(p.jumpBuffer>0&&p.coyote>0&&p.drop<=0&&!(p.slide>0&&walls.some(w=>p.x+10>w.x&&p.x-10<w.x+w.w&&p.y>w.y&&p.y-43<w.y+w.h))){p.slide=0;p.vy=-tuning.jump;p.ground=false;p.jumpBuffer=0;p.coyote=0;if(p.id===0){sample('jump_a',p.x,.10,1.15);sound(180,.05,.008);}}
-  p.slide=Math.max(0,p.slide-dt);if(p.slide>0&&walls.some(w=>p.x+10>w.x&&p.x-10<w.x+w.w&&p.y>w.y&&p.y-43<w.y+w.h))p.slide=Math.max(.03,p.slide);
+  const standingBlocked=()=>terrainSolids().some(w=>p.x+12>w.x&&p.x-12<w.x+w.w&&p.y>w.y&&p.y-43<w.y+w.h);
+  if(p.jumpBuffer>0&&p.coyote>0&&p.drop<=0&&!standingBlocked()){p.slide=0;p.vy=-tuning.jump;p.ground=false;p.jumpBuffer=0;p.coyote=0;if(p.id===0){sample('jump_a',p.x,.10,1.15);sound(180,.05,.008);}}
+  const wasSliding=p.slide>0;
+  p.slide=Math.max(0,p.slide-dt);if(wasSliding&&standingBlocked())p.slide=Math.max(.03,p.slide);
   if(p.slide>0){p.vx*=Math.pow(.992,dt*60);if(vrnd(0,1)<dt*28)fx(p.x-Math.sign(p.vx)*13,p.y-2,'#ab9068',1);}
   else {const target=dir*tuning.speed;p.vx+=(target-p.vx)*(1-Math.exp(-dt*(p.ground?15:7)));}
   const thrusting=boost&&p.fuel>.005&&!(p.jam>0);
@@ -514,7 +530,7 @@ function ai(p,dt){
   if(p.ground)p.navDeck=deckLevels().sort((a,b)=>Math.abs(a-p.y)-Math.abs(b-p.y))[0];
   const goalDeck=deckLevels().sort((a,b)=>Math.abs(a-goal.y)-Math.abs(b-goal.y))[0];
   let dir=0,up=false,down=false,jump=false,boost=false;
-  if(p.route){const end=p.route.end;if(Math.abs(p.y-end)<=2){p.y=end;p.navDeck=end;p.routeCooldown=.75;p.route=null;p.ladder=false;p.ground=true;p.vy=0;}
+  if(p.route){const end=p.route.end;if(Math.abs(p.y-end)<=2){p.y=end;p.navDeck=end;p.routeCooldown=.75;p.route=null;p.ladder=false;p.ladderExit=null;p.ground=true;p.vy=0;}
     else {dir=Math.abs(p.x-p.route.x)>10?Math.sign(p.route.x-p.x):0;up=end<p.y;down=!up;}}
   if(!p.route){const dy=goalDeck-p.navDeck;
     if(!isCarrion()&&Math.abs(dy)>110&&p.routeCooldown<=0){const routes=ladders.filter(l=>dy<0?l.bottom===p.navDeck:l.top===p.navDeck);
@@ -1333,7 +1349,7 @@ function fireArc(p){const hit=new Set([p]),first=targetsFor(p).filter(q=>Math.hy
 }
 function launchPlasma(p){gearEntities.push({kind:'plasma',id:++entitySequence,x:p.x,y:chest(p),vx:Math.cos(p.aim)*620,vy:Math.sin(p.aim)*620,life:1.3,owner:p,muzzle:weaponMuzzle(p),spawnX:p.x,spawnY:chest(p),age:0});}
 function carrionAI(p,goal,dt){const link=routeTo(p,goal);let dir=0,up=false,down=false,jump=false,boost=false;
- if(p.route){if(Math.abs(p.y-p.route.end)<3){p.y=p.route.end;p.navDeck=p.y;p.route=null;p.routeCooldown=.3;}else{dir=Math.abs(p.x-p.route.x)>10?Math.sign(p.route.x-p.x):0;up=p.route.end<p.y;down=!up;}}
+ if(p.route){if(Math.abs(p.y-p.route.end)<3){p.y=p.route.end;p.navDeck=p.y;p.route=null;p.ladderExit=null;p.routeCooldown=.3;}else{dir=Math.abs(p.x-p.route.x)>10?Math.sign(p.route.x-p.x):0;up=p.route.end<p.y;down=!up;}}
  if(!p.route){if(link?.type==='ladder'){dir=Math.abs(link.x-p.x)>12?Math.sign(link.x-p.x):0;if(Math.abs(link.x-p.x)<21){p.route={x:link.x,end:link.end};up=link.end<p.y;down=!up;}}
   else if(link){dir=Math.sign(link.x-p.x);if(link.type==='drop'&&Math.abs(link.x-p.x)<24){down=true;jump=true;}else if(p.ground){const edge=!floors.some(f=>Math.abs(f.y-p.y)<4&&p.x+dir*45>=f.x&&p.x+dir*45<=f.x+f.w);if(edge||link.end<p.y&&Math.abs(link.x-p.x)<115){jump=true;p.crossUntil=elapsed+.38;}}}
   else{const dx=goal.x-p.x;const reach=p.weapon==='shotgun'?60:p.weapon==='arc'?155:p.weapon==='breach'?300:270;dir=goal.type==='fight'?(Math.abs(dx)>reach?Math.sign(dx):Math.abs(dx)<65?-Math.sign(dx):0):Math.abs(dx)>17?Math.sign(dx):0;}}

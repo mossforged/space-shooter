@@ -1,0 +1,114 @@
+<!doctype html><meta charset="utf-8"><title>Void Crew traversal regressions</title>
+<style>body{background:#101b22;color:#dbe9e7;font:14px monospace}iframe{width:960px;height:540px;border:0} .fail{color:#ff9980}.pass{color:#91d9ae}</style>
+<h1>Void Crew v0.18 traversal tests</h1><pre id="results">Loading…</pre><iframe src="about:blank"></iframe>
+<script>
+document.querySelector('iframe').onload=()=>{
+if(!document.querySelector('iframe').contentWindow.voidCrew)return;
+const w=document.querySelector('iframe').contentWindow,g=w.voidCrew,results=[];
+// Disable the frame clock; tests advance the production movement and animation at fixed timesteps.
+w.requestAnimationFrame=()=>0;
+const check=(name,fn)=>{try{fn();results.push({name,pass:true});}catch(e){results.push({name,pass:false,error:e.message});}};
+const assert=(ok,msg)=>{if(!ok)throw Error(msg);};
+function setup(id='crosscut'){g.fresh(false,id);return g.state;}
+function actor(x,y){return {...g.state.players[0],id:1,x,y,ground:true,vx:0,vy:0,ladder:false,coyote:0,jumpBuffer:0,slide:0,slideWait:0,drop:0,inv:0,fuel:1};}
+function run(p,input,n=120,hz=120){for(let i=0;i<n;i++){g.move(p,1/hz,typeof input==='function'?input(i,p):input);g.stepActorAnimation(p,1/hz);}return p;}
+function overlap(p,b){return p.x+12>b.x&&p.x-12<b.x+b.w&&p.y>b.y+.01&&p.y-(p.slide>0?23:43)<b.y+b.h-.01;}
+for(const id of ['crosscut','carrion','freighter']){
+setup(id);
+for(const l of g.state.ladders){
+for(const up of [true,false]) check(`${id} ladder ${l.x}/${l.top}: held ${up?'Up':'Down'} exits`,()=>{
+const p=actor(l.x,up?l.bottom:l.top);run(p,{up,down:!up},360);assert(!p.ladder&&p.ground&&p.vy===0,JSON.stringify({x:p.x,y:p.y,ladder:p.ladder,ground:p.ground,vy:p.vy}));assert(p.y===(up?l.top:l.bottom),'wrong deck');assert(g.animationInfo(p).mode!=='climb','stuck climbing pose');
+for(const dir of [-1,1]){const q={...p};run(q,{dir,up,down:!up},18);assert(dir*(q.x-p.x)>8,'cannot walk off '+dir);}
+});
+check(`${id} ladder ${l.x}/${l.top}: standing approach clearance`,()=>{
+for(let y=l.top;y<=l.bottom;y+=4)for(const b of [...g.state.boxes,...g.state.walls])assert(!overlap(actor(l.x,y),b),`blocked at y=${y} by ${JSON.stringify(b)}`);
+for(const y of [l.top,l.bottom])for(const x of [l.x-24,l.x+24])for(const b of [...g.state.boxes,...g.state.walls])assert(!overlap(actor(x,y),b),`endpoint approach blocked at ${x},${y} by ${JSON.stringify(b)}`);
+});
+}
+}
+
+for(const hz of [60,120,144]){
+for(const id of ['crosscut','carrion']){
+setup(id);
+for(const dir of [-1,1]){
+check(`${id} ${hz}Hz duct ${dir}: enter, stay low, exit, stand and reverse`,()=>{
+const b=g.state.walls[0],floor=id==='crosscut'?500:850;
+const start=dir>0?b.x-70:b.x+b.w+70,p=actor(start,floor);p.vx=dir*300;
+let entered=false,exited=false;
+for(let i=0;i<hz*3;i++){
+g.move(p,1/hz,{dir,slide:i===0,jump:entered&&i%13===0&&i>0});
+if(p.x>b.x-11&&p.x<b.x+b.w+11){entered=true;assert(p.slide>0,'stood up under duct '+JSON.stringify({x:p.x,y:p.y,vy:p.vy,slide:p.slide,i}));assert(!overlap(p,b),'intersected ceiling');}
+if(entered&&(dir>0?p.x>b.x+b.w+25:p.x<b.x-25)){exited=true;break;}
+}
+assert(entered&&exited,'failed to traverse duct '+JSON.stringify(p));
+run(p,{dir},Math.ceil(hz*.15),hz);assert(p.slide===0,'did not stand after exit');
+// Re-enter from the opposite side after the slide cooldown, with a new run-up.
+p.x=dir>0?b.x+b.w+70:b.x-70;p.y=floor;p.ground=true;p.vx=-dir*300;p.slideWait=0;p.slide=0;p.vy=0;p.jumpBuffer=0;p.coyote=0;
+run(p,{dir:-dir,slide:true},Math.ceil(hz*.9),hz);assert(-dir*(p.x-(dir>0?b.x+b.w+70:b.x-70))>220,'reverse duct traversal blocked '+JSON.stringify({x:p.x,y:p.y,slide:p.slide}));
+});
+}
+}
+setup();
+for(const dir of [-1,1]){
+check(`${hz}Hz cover jump ${dir}`,()=>{
+const b=g.state.boxes.find(b=>b.x===330),p=actor(dir>0?b.x-70:b.x+b.w+70,360);p.vx=dir*300;
+run(p,i=>({dir,jump:i===0}),Math.ceil(hz*.7),hz);
+assert(dir>0?p.x>b.x+b.w+12:p.x<b.x-12,'blocked by cover');assert(!g.state.boxes.some(b=>overlap(p,b)),'inside cover');
+});
+for(const [left,right] of [[620,700],[1750,1830]])check(`${hz}Hz jet crossing ${left}-${right}, ${dir}`,()=>{
+const start=dir>0?left-45:right+45,p=actor(start,360);p.vx=dir*300;
+run(p,i=>({dir,jump:i===0,boost:i<hz*.24,up:i<hz*.24}),Math.ceil(hz*.7),hz);
+assert(dir>0?p.x>right+12:p.x<left-12,'gap not crossed');assert(p.y<=360.01,'fell below target deck');assert(p.fuel<1,'no jet fuel consumed');
+});
+check(`${hz}Hz low deck ceiling ${dir}`,()=>{
+const p=actor(dir>0?320:400,360);let touched=false;
+for(let i=0;i<hz*.4;i++){g.move(p,1/hz,{dir,jump:i===0});if(p.vy===0&&!p.ground)touched=true;assert(p.y-43>=261-.01,'passed through upper deck');}
+assert(touched,'did not hit low ceiling');
+});
+}
+check(`${hz}Hz sprint and slide speed preserved`,()=>{
+let p=actor(30,360);run(p,{dir:1},Math.ceil(hz*.4),hz);assert(p.vx>290,'run slowed');
+p=actor(1050,360);p.vx=300;g.move(p,1/hz,{dir:1,slide:true});assert(p.vx>425&&p.slide>0,'slide slowed');
+});
+}
+setup();
+check('ladder release/reverse, mid-climb jump and boost',()=>{
+let p=actor(210,360);run(p,{up:true},100);assert(!p.ladder&&p.y===245,'top exit');run(p,{down:true},10);assert(p.ladder&&p.y>245,'reverse failed');
+g.move(p,1/120,{jump:true,dir:1});assert(!p.ladder&&p.vy<0&&p.vx>0,'jump off ladder failed');
+p=actor(210,360);run(p,{up:true},15);g.move(p,1/120,{boost:true,up:true,dir:-1});assert(!p.ladder&&p.vx<0&&p.fuel<1,'jet off ladder failed');
+});
+check('stacked tall ladders require release at deck, then continue',()=>{
+setup('carrion');const p=actor(580,300);run(p,{down:true},200);assert(p.ground&&!p.ladder&&p.y===460,'missed intermediate deck');run(p,{},1);run(p,{down:true},200);assert(p.y===620&&p.ground&&!p.ladder,'cannot continue after release');
+});
+for(const posture of ['run','slide','climb','jet'])check(`combat while ${posture}: fire, damage, reload`,()=>{
+setup();const p=g.state.players[0],t=g.state.players[1];Object.assign(p,{x:1030,y:360,ground:true,inv:0,vx:300,aim:0});Object.assign(t,{x:1150,y:360,inv:0,shield:0,hp:100});
+const input=posture==='slide'?{dir:1,slide:true}:posture==='jet'?{dir:1,boost:true,up:true}:posture==='climb'?{up:true}:{dir:1};
+if(posture==='climb'){Object.assign(p,{x:1110,y:450,ground:false});Object.assign(t,{x:1180,y:450,ground:false});}
+g.move(p,1/120,input);p.aim=Math.atan2((t.y-25)-(p.y-(p.slide>0?12:25)),t.x-p.x);
+const hp=t.hp,ammo=p.ammo;assert(g.shoot(p),'cannot fire');assert(p.ammo<ammo&&t.hp<hp,'shot did not damage target');p.ammo=0;g.reload(p);assert(p.reload>0,'reload failed');
+});
+check('combat bots still traverse and fight',()=>{
+setup();Object.assign(g.state.players[1],{x:1050,y:360,inv:0});Object.assign(g.state.players[0],{x:1150,y:360,inv:0});for(let i=0;i<1200;i++)g.step(1/120);assert(g.state.players.some(p=>p.dealt>0),'bots never dealt damage');assert(g.state.players.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)),'invalid actor position');
+});
+for(const code of ['ArrowUp','KeyW','ArrowDown','KeyS'])check(`keyboard ${code}: endpoint then horizontal exit`,()=>{
+setup();const up=code==='ArrowUp'||code==='KeyW',p=g.state.players[0],canvas=w.document.querySelector('canvas');
+Object.assign(p,{x:210,y:up?360:245,ground:true,inv:999});
+canvas.dispatchEvent(new w.KeyboardEvent('keydown',{code,bubbles:true}));
+for(let i=0;i<150;i++)g.step(1/120);
+assert(p.ground&&!p.ladder&&p.y===(up?245:360),'keyboard held at endpoint');
+canvas.dispatchEvent(new w.KeyboardEvent('keydown',{code:'KeyD',bubbles:true}));
+for(let i=0;i<20;i++)g.step(1/120);
+canvas.dispatchEvent(new w.KeyboardEvent('keyup',{code,bubbles:true}));canvas.dispatchEvent(new w.KeyboardEvent('keyup',{code:'KeyD',bubbles:true}));
+assert(p.x>230&&!p.ladder,'keyboard walk-off failed');
+});
+check('bots continue through stacked tall ladders',()=>{
+setup('carrion');const p=g.state.players[1];Object.assign(p,{x:580,y:450,route:{x:580,end:460},navDeck:300,ground:false,inv:999,brain:999,goal:{x:565,y:620,type:'ammo'}});
+for(let i=0;i<240;i++)g.ai(p,1/120);
+assert(p.y>=618,'bot stuck at intermediate endpoint '+JSON.stringify({x:p.x,y:p.y,route:p.route}));
+});
+setup();const preview=g.state.players[0];Object.assign(preview,{x:210,y:360,ground:true});run(preview,{up:true},180);g.render();
+window.testResults=results;document.querySelector('#results').textContent=JSON.stringify({passed:results.filter(r=>r.pass).length,failed:results.filter(r=>!r.pass).length,failures:results.filter(r=>!r.pass)},null,2);
+};
+</script>
+
+<script>document.querySelector('iframe').src=(new URLSearchParams(location.search).get('offline')?'offline-smoke.html':'../index.html')+'?test='+Date.now();</script>
